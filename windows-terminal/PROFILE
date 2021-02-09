@@ -1,0 +1,47 @@
+if (!(Test-Path -Path $PROFILE)) { New-Item -ItemType File -Path ROFILE -Force }
+set-theme Star
+
+Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
+
+Set-PSReadLineKeyHandler -Key UpArrow `
+   -ScriptBlock {
+     param($key, $arg)
+
+     $line=$null
+     $cursor=$null
+     [Microsoft.PowerShell.PSConsoleReadLine]::HistorySearchBackward()
+     [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+     [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($line.Length)
+}
+
+
+Set-PSReadLineKeyHandler -Key DownArrow `
+   -ScriptBlock {
+     param($key, $arg)
+
+     $line=$null
+     $cursor=$null
+     [Microsoft.PowerShell.PSConsoleReadLine]::HistorySearchForward()
+     [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+     [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($line.Length)
+}
+
+set-alias k kubectl
+set-alias d docker
+set-alias mk minikube
+
+
+
+$Env:khome="$HOME\.kube\config"
+
+function cfa { cf app $args; }
+function kcfg { $Env:KUBECONFIG="$args";}
+function kg { kubectl get $args; }
+function dls { docker container ls;}	
+function sec
+{
+icacls $args /reset;
+icacls $args /inheritance:r;
+icacls $args /GRANT:R "i513578:R";
+}
+
